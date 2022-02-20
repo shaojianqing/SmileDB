@@ -40,5 +40,10 @@ void initIndexHeader(IndexHeader *indexHeader) {
 }
 
 void initFsegHeader(FsegHeader *fsegHeader) {
-    
+    convertEndianInt(&(fsegHeader->leafPagesInodeSpace));
+    convertEndianInt(&(fsegHeader->leafPagesInodePageNumber));
+    convertEndianShort(&(fsegHeader->leafPagesInodeOffset));
+    convertEndianInt(&(fsegHeader->nonLeafPagesInodeSpace));
+    convertEndianInt(&(fsegHeader->nonLeafPagesInodePageNumber));
+    convertEndianShort(&(fsegHeader->nonLeafPagesInodeOffset));
 }

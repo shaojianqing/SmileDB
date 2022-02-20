@@ -51,8 +51,26 @@ Page* loadPage(File* file, u32 pageNumber) {
 }
 
 static IndexPage* loadIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {
+    
+    byte *indexHeaderBuf = buffer + FILE_HEADER_SIZE;
+    IndexHeader *indexHeader = (IndexHeader *)malloc(INDEX_HEADER_SIZE);
+    memcpy(indexHeader, indexHeaderBuf, INDEX_HEADER_SIZE);
 
+    initIndexHeader(indexHeader);
 
+    byte *fsegHeaderBuf = buffer + FILE_HEADER_SIZE + INDEX_HEADER_SIZE;
+    FsegHeader *fsegHeader = (FsegHeader)malloc(FSEG_HEADER_SIZE);
+    memcpy(fsegHeader, fsegHeaderBuf, FSEG_HEADER_SIZE);
+
+    initFsegHeader(fsegHeader);
+
+    IndexPage *indexPage = (IndexPage *)malloc(sizeof(IndexPage));
+    indexPage->page.fileHeader = fileHeader;
+    indexPage->page.fileTrailer = fileTrailer;
+    indexPage->indexHeader = indexHeader;
+    indexPage->fsegHeader = fsegHeader;
+
+    return indexPage;
 }
 
 static InodePage* loadInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {

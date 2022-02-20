@@ -20,6 +20,9 @@ struct Page {
 struct IndexPage {
     Page page;
 
+    IndexHeader *indexHeader;
+
+    FsegHeader *fsegHeader;
 };
 
 struct InodePage {

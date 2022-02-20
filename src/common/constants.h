@@ -7,6 +7,9 @@
 #define FILE_HEADER_SIZE                 38
 #define FILE_TRAILER_SIZE                8
 
+#define INDEX_HEADER_SIZE                36
+#define FSEG_HEADER_SIZE                 20
+
 /*
  * Page Type Enum
  */
