@@ -1,4 +1,8 @@
 /*
+ * Definition of bool type;
+ */
+typedef unsigned char bool;
+/*
  * Definition of byte type;
  */
 typedef unsigned char byte;
@@ -33,3 +37,9 @@ typedef void Object;
  * Definition of FILE type as File
  */
 typedef FILE File;
+
+/*
+ * Definition of void type as 
+ 
+ */
+typedef void Object;

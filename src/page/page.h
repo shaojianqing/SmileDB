@@ -23,6 +23,18 @@ struct IndexPage {
     IndexHeader *indexHeader;
 
     FsegHeader *fsegHeader;
+
+    DataRecord *infimum;
+
+    DataRecord *supremum;
+
+    u16* directorySlotList;
+
+    u16 directorySlotCount;
+
+    bool (*isLeafPage)(IndexPage *this);
+
+    bool (*isRootPage)(IndexPage *this);
 };
 
 struct InodePage {
@@ -40,9 +52,12 @@ struct IBufBitmapPage {
 
 };
 
+IndexPage *createIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
 
+InodePage *createInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
 
+FspHdrXesPage *createFspHdrXesPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
 
-
+IBufBitmapPage *createIBufBitmapPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
 
 

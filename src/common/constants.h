@@ -10,6 +10,10 @@
 #define INDEX_HEADER_SIZE                36
 #define FSEG_HEADER_SIZE                 20
 
+#define MUM_RECORD_SIZE                  13
+
+#define DIRECTORY_SLOT_SIZE              2
+
 /*
  * Page Type Enum
  */
@@ -28,5 +32,9 @@
 #define PAGE_TYPE_UNKNOWN                13
 #define PAGE_TYPE_RTREE_INDEX            17854
 #define PAGE_TYPE_INDEX                  17855
+
+
+#define TRUE 					         1
+#define FALSE 					         0
 
 

@@ -6,6 +6,8 @@ typedef struct IndexHeader IndexHeader;
 
 typedef struct FsegHeader FsegHeader;
 
+typedef struct RecordBuffer RecordBuffer;
+
 typedef struct RecordHeader RecordHeader;
 
 struct FileHeader {
@@ -28,13 +30,15 @@ struct FileHeader {
 };
 
 struct FileTrailer {
+
     u32 checksum;
 
     u32 low32lsn;
 };
 
 struct IndexHeader {
-    u16 numOfDirSlots;
+
+    u16 directorySlotCount;
 
     u16 heapTopPosition;
 
@@ -48,9 +52,9 @@ struct IndexHeader {
 
     u16 pageDirection;
 
-    u16 numOfInsertsInPageDirection;
+    u16 insertCountInPageDirection;
 
-    u16 numOfRecords;
+    u16 recordCount;
 
     u64 maxTransactionId;
 
@@ -74,7 +78,17 @@ struct FsegHeader {
     u16 nonLeafPagesInodeOffset;
 }
 
+struct RecordBuffer {
+
+    u8 minAndDelete;
+
+    u16 orderAndType;
+
+    short nextOffest;
+}
+
 struct RecordHeader {
+
 
     
 }
@@ -83,6 +97,6 @@ void initFileHeader(FileHeader *fileHeader);
 
 void initFileTrailer(FileTrailer *fileTrailer);
 
-void initIndexHeader(IndexHeader *indexHeader);
+void initIndexHeader(IndexHeader *indexHeader);  
 
 void initFsegHeader(FsegHeader *fsegHeader);

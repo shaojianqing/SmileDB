@@ -9,14 +9,6 @@
 #include "../page/page.h"
 #include "storage.h"
 
-static IndexPage* loadIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
-
-static InodePage* loadInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
-
-static FspHdrXesPage* loadFspHdrXesPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
-
-static IBufBitmapPage* loadIBufBitmapPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
-
 Page* loadPage(File* file, u32 pageNumber) {
     byte *buffer = (byte*)malloc(PAGE_SIZE);
     fseek(file, PAGE_SIZE*pageNumber, SEEK_SET);
@@ -36,55 +28,18 @@ Page* loadPage(File* file, u32 pageNumber) {
 
     u16 pageType = page->fileHeader->pageType;
     if (pageType == PAGE_TYPE_FILE_SPACE_HEADER) {
-        return (Page *)loadIndexPage(fileHeader, fileTrailer, buffer);
+        return (Page *)createIndexPage(fileHeader, fileTrailer, buffer);
     } else if (pageType == PAGE_TYPE_EXTENT_DESCRIPTOR) {
 
     } else if (pageType == PAGE_TYPE_IBUF_BITMAP) {
-        return (Page *)loadInodePage(fileHeader, fileTrailer, buffer);
+        return (Page *)createInodePage(fileHeader, fileTrailer, buffer);
     } else if (pageType == PAGE_TYPE_INDEX) {
-        return (Page *)loadFspHdrXesPage(fileHeader, fileTrailer, buffer);
+        return (Page *)createFspHdrXesPage(fileHeader, fileTrailer, buffer);
     } else if (pageType == PAGE_TYPE_INODE) {
-        return (Page *)loadIBufBitmapPage(fileHeader, fileTrailer, buffer);
+        return (Page *)createIBufBitmapPage(fileHeader, fileTrailer, buffer);
     }
 
     return NULL;
-}
-
-static IndexPage* loadIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {
-    
-    byte *indexHeaderBuf = buffer + FILE_HEADER_SIZE;
-    IndexHeader *indexHeader = (IndexHeader *)malloc(INDEX_HEADER_SIZE);
-    memcpy(indexHeader, indexHeaderBuf, INDEX_HEADER_SIZE);
-
-    initIndexHeader(indexHeader);
-
-    byte *fsegHeaderBuf = buffer + FILE_HEADER_SIZE + INDEX_HEADER_SIZE;
-    FsegHeader *fsegHeader = (FsegHeader)malloc(FSEG_HEADER_SIZE);
-    memcpy(fsegHeader, fsegHeaderBuf, FSEG_HEADER_SIZE);
-
-    initFsegHeader(fsegHeader);
-
-    IndexPage *indexPage = (IndexPage *)malloc(sizeof(IndexPage));
-    indexPage->page.fileHeader = fileHeader;
-    indexPage->page.fileTrailer = fileTrailer;
-    indexPage->indexHeader = indexHeader;
-    indexPage->fsegHeader = fsegHeader;
-
-    return indexPage;
-}
-
-static InodePage* loadInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {
-
-    
-}
-
-static FspHdrXesPage* loadFspHdrXesPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {
-
-
-}
-
-static IBufBitmapPage* loadIBufBitmapPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer) {
-
 }
 
 u32 calculatePageCount(File* file) {
