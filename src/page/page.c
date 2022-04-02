@@ -23,6 +23,8 @@ IndexPage *createIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byt
 
     initFsegHeader(fsegHeader);
 
+    
+
     IndexPage *indexPage = (IndexPage *)malloc(sizeof(IndexPage));
     indexPage->page.fileHeader = fileHeader;
     indexPage->page.fileTrailer = fileTrailer;
