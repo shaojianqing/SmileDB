@@ -3,18 +3,19 @@ typedef struct Page Page;
 
 typedef struct IndexPage IndexPage;
 
-typedef struct InodePage INodePage;
+typedef struct InodePage InodePage;
 
 typedef struct FspHdrXesPage FspHdrXesPage;
 
 typedef struct IBufBitmapPage IBufBitmapPage;
 
 struct Page {
+
     FileHeader *fileHeader;
 
     FileTrailer *fileTrailer;
 
-    byte *pageBuffer;
+    ByteBuffer *pageBuffer;
 };
 
 struct IndexPage {
@@ -22,7 +23,7 @@ struct IndexPage {
 
     IndexHeader *indexHeader;
 
-    FsegHeader *fsegHeader;
+    FileSegmentHeader *fsegHeader;
 
     DataRecord *infimum;
 
@@ -52,12 +53,10 @@ struct IBufBitmapPage {
 
 };
 
-IndexPage *createIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
+IndexPage *createIndexPage(FileHeader *fileHeader, FileTrailer *fileTrailer, ByteBuffer *byteBuffer, Table *table);
 
-InodePage *createInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
+InodePage *createInodePage(FileHeader *fileHeader, FileTrailer *fileTrailer, ByteBuffer *byteBuffer);
 
-FspHdrXesPage *createFspHdrXesPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
+FspHdrXesPage *createFspHdrXesPage(FileHeader *fileHeader, FileTrailer *fileTrailer, ByteBuffer *byteBuffer);
 
-IBufBitmapPage *createIBufBitmapPage(FileHeader *fileHeader, FileTrailer *fileTrailer, byte *buffer);
-
-
+IBufBitmapPage *createIBufBitmapPage(FileHeader *fileHeader, FileTrailer *fileTrailer, ByteBuffer *byteBuffer);

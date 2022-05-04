@@ -2,48 +2,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../common/constants.h"
 #include "../common/type.h"
 #include "../utils/utils.h"
+#include "../data/objectType.h"
+#include "../data/stringType.h"
 
+#include "byteBuffer.h"
 #include "header.h"
 
-void initFileHeader(FileHeader *fileHeader) {
-    convertEndianInt(&(fileHeader->checksum));
-    convertEndianInt(&(fileHeader->pageNumber));
-    convertEndianInt(&(fileHeader->prevPageNo));
-    convertEndianInt(&(fileHeader->nextPageNo));
-
-    convertEndianLong(&(fileHeader->lastModifiedLsn));
-    convertEndianShort(&(fileHeader->pageType));
-    convertEndianLong(&(fileHeader->flushLsn));
-    convertEndianInt(&(fileHeader->spaceId));
+void initFileHeader(ByteBuffer *byteBuffer, FileHeader *fileHeader) {
+    fileHeader->checksum = byteBuffer->readUnsignedInteger(byteBuffer);
+    fileHeader->pageNumber = byteBuffer->readUnsignedInteger(byteBuffer);
+    fileHeader->prevPageNo = byteBuffer->readUnsignedInteger(byteBuffer);
+    fileHeader->nextPageNo = byteBuffer->readUnsignedInteger(byteBuffer);
+    fileHeader->lastModifiedLsn = byteBuffer->readLong(byteBuffer);
+    fileHeader->pageType = byteBuffer->readShort(byteBuffer);
+    fileHeader->flushLsn = byteBuffer->readLong(byteBuffer);
+    fileHeader->spaceId = byteBuffer->readUnsignedInteger(byteBuffer);
 }
 
-void initFileTrailer(FileTrailer *fileTrailer) {
-    convertEndianInt(&(fileTrailer->checksum));
-    convertEndianInt(&(fileTrailer->low32lsn));
+void initFileTrailer(ByteBuffer *byteBuffer, FileTrailer *fileTrailer) {
+    fileTrailer->checksum = byteBuffer->readUnsignedInteger(byteBuffer);
+    fileTrailer->low32lsn = byteBuffer->readUnsignedInteger(byteBuffer);
 }
 
-void initIndexHeader(IndexHeader *indexHeader) {
-    convertEndianShort(&(indexHeader->numOfDirSlots));
-    convertEndianShort(&(indexHeader->heapTopPosition));
-    convertEndianShort(&(indexHeader->indexPageFlag));
-    convertEndianShort(&(indexHeader->firstGarbageRecOffset));
-    convertEndianShort(&(indexHeader->garbageSpace));
-    convertEndianShort(&(indexHeader->lastInsertPos));
-    convertEndianShort(&(indexHeader->pageDirection));
-    convertEndianShort(&(indexHeader->numOfInsertsInPageDirection));
-    convertEndianShort(&(indexHeader->numOfRecords));
-    convertEndianLong(&(indexHeader->maxTransactionId));
-    convertEndianShort(&(indexHeader->pageLevel));
-    convertEndianLong(&(indexHeader->indexId));
+void initIndexHeader(ByteBuffer *byteBuffer, IndexHeader *indexHeader) {
+
+    indexHeader->directorySlotCount = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->heapTopPosition = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->indexPageFlag = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->firstGarbageRecOffset = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->garbageSpace = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->lastInsertPos = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->pageDirection = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->insertCountInPageDirection = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->recordCount = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->maxTransactionId = byteBuffer->readUnsignedLong(byteBuffer);
+    indexHeader->pageLevel = byteBuffer->readUnsignedShort(byteBuffer);
+    indexHeader->indexId = byteBuffer->readUnsignedLong(byteBuffer);
 }
 
-void initFsegHeader(FsegHeader *fsegHeader) {
+void initFsegHeader(ByteBuffer *byteBuffer, FileSegmentHeader *fsegHeader) {
     convertEndianInt(&(fsegHeader->leafPagesInodeSpace));
     convertEndianInt(&(fsegHeader->leafPagesInodePageNumber));
     convertEndianShort(&(fsegHeader->leafPagesInodeOffset));
     convertEndianInt(&(fsegHeader->nonLeafPagesInodeSpace));
     convertEndianInt(&(fsegHeader->nonLeafPagesInodePageNumber));
     convertEndianShort(&(fsegHeader->nonLeafPagesInodeOffset));
+}
+
+void initRecordHeader(ByteBuffer *byteBuffer, RecordHeader *recordHeader) { 
+
+    byte minAndDelete = byteBuffer->readByte(byteBuffer);
+
+    recordHeader->recordFlag = (minAndDelete & 0xf0)>>4;
+    recordHeader->recordOwnedCount = (minAndDelete & 0x0f);
+
+    u16 orderAndType = byteBuffer->readUnsignedShort(byteBuffer);
+
+    recordHeader->recordType = (orderAndType & 0x07);
+    recordHeader->order = (short)((orderAndType & 0xfff8)>>3);
+
+    recordHeader->nextRecordOffset = byteBuffer->readShort(byteBuffer);
 }

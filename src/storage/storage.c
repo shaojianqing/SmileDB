@@ -5,38 +5,44 @@
 #include "../common/type.h"
 #include "../utils/utils.h"
 #include "../common/constants.h"
+#include "../data/objectType.h"
+#include "../data/stringType.h"
+#include "../data/arrayList.h"
+#include "../data/hashMap.h"
+#include "../page/byteBuffer.h"
 #include "../page/header.h"
+#include "../table/table.h"
+#include "../page/record.h"
 #include "../page/page.h"
+
 #include "storage.h"
 
-Page* loadPage(File* file, u32 pageNumber) {
+Page* loadPage(File* file, u32 pageNumber, Table *table) {
     byte *buffer = (byte*)malloc(PAGE_SIZE);
     fseek(file, PAGE_SIZE*pageNumber, SEEK_SET);
     fread(buffer, 1, PAGE_SIZE, file);
 
-    byte *fileHeaderBuf = buffer;
-    FileHeader *fileHeader = (FileHeader*)malloc(FILE_HEADER_SIZE);
-    memcpy(fileHeader, fileHeaderBuf, FILE_HEADER_SIZE);
+    ByteBuffer *byteBuffer = constructByteBuffer(buffer, PAGE_SIZE);
 
-    initFileHeader(fileHeader);
+    byteBuffer->setPosition(byteBuffer, 0);
+    FileHeader *fileHeader = (FileHeader*)malloc(sizeof(FileHeader));
+    initFileHeader(byteBuffer, fileHeader);
 
-    byte *fileTrailerBuf = (buffer + PAGE_SIZE - FILE_TRAILER_SIZE);
-    FileTrailer *fileTrailer = (FileTrailer*)malloc(FILE_TRAILER_SIZE);
-    memcpy(fileTrailer, fileTrailerBuf, FILE_TRAILER_SIZE);
+    byteBuffer->setPosition(byteBuffer, PAGE_SIZE - FILE_TRAILER_SIZE);
+    FileTrailer *fileTrailer = (FileTrailer*)malloc(sizeof(FileTrailer));
+    initFileTrailer(byteBuffer, fileTrailer);
 
-    initFileTrailer(fileTrailer);
-
-    u16 pageType = page->fileHeader->pageType;
-    if (pageType == PAGE_TYPE_FILE_SPACE_HEADER) {
-        return (Page *)createIndexPage(fileHeader, fileTrailer, buffer);
+    u16 pageType = fileHeader->pageType;
+    if (pageType == PAGE_TYPE_INDEX) {
+        return (Page *)createIndexPage(fileHeader, fileTrailer, byteBuffer, table);
     } else if (pageType == PAGE_TYPE_EXTENT_DESCRIPTOR) {
 
-    } else if (pageType == PAGE_TYPE_IBUF_BITMAP) {
-        return (Page *)createInodePage(fileHeader, fileTrailer, buffer);
-    } else if (pageType == PAGE_TYPE_INDEX) {
-        return (Page *)createFspHdrXesPage(fileHeader, fileTrailer, buffer);
     } else if (pageType == PAGE_TYPE_INODE) {
-        return (Page *)createIBufBitmapPage(fileHeader, fileTrailer, buffer);
+        return (Page *)createInodePage(fileHeader, fileTrailer, byteBuffer);
+    } else if (pageType == PAGE_TYPE_FILE_SPACE_HEADER) {
+        return (Page *)createFspHdrXesPage(fileHeader, fileTrailer, byteBuffer);
+    } else if (pageType == PAGE_TYPE_IBUF_BITMAP) {
+        return (Page *)createIBufBitmapPage(fileHeader, fileTrailer, byteBuffer);
     }
 
     return NULL;

@@ -27,19 +27,13 @@ typedef unsigned int u32;
 typedef unsigned long u64;
 
 /*
- * Definition of Object type, 
+ * Definition of Type type, 
  * this type is used to point 
  * to any kind of pointer;
  */
-typedef void Object;
+typedef void Type;
 
 /*
  * Definition of FILE type as File
  */
 typedef FILE File;
-
-/*
- * Definition of void type as 
- 
- */
-typedef void Object;

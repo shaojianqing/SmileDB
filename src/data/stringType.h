@@ -1,0 +1,29 @@
+
+#define DEFALUT_STRING_SPACE		16
+
+typedef struct Object Object;
+
+typedef struct String String;
+
+struct String {
+
+	Object super;
+	
+	int length;
+
+	char *value;
+
+	u32 (*getLength)(String *this);
+
+	char* (*getValue)(String *this);
+
+	String* (*subString)(String *this, int start, int end);
+
+	String* (*catString)(String *this, String *string);
+};
+
+String* createString(char *value);
+
+String* createStringWithRange(char *value, int range);
+
+void destroyString(String *string);

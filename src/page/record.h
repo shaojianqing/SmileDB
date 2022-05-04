@@ -1,9 +1,18 @@
 
 typedef struct DataRecord DataRecord;
 
-struct DataRecord {
+typedef struct VarLenInfo VarLenInfo;
 
-    u64 pageNumber;
+struct VarLenInfo {
+
+    String *columnName;
+
+    u16 columnLength;
+
+    bool isOverflowPage;
+};
+
+struct DataRecord {
 
     RecordHeader *header;
 
@@ -11,9 +20,23 @@ struct DataRecord {
 
     Table *table;
 
-    Object *fieldDatas;
+    HashMap *recordData;
 
-    u32 fieldSize;
+    u32 fieldCount;
 
     u64 childPageNumber;
-}
+
+    List* (*getPrimaryKeyValues)(DataRecord *this);
+
+    int (*getNextRecordPosition)(DataRecord *this);
+
+    Type* (*getObject)(DataRecord *this, String *cloumnName);
+
+    void (*putObject)(DataRecord *this, String *cloumnName, Type *columnValue);
+};
+
+DataRecord* constructDataRecord(RecordHeader *header, Table *table);
+
+DataRecord* readDataRecord(ByteBuffer *byteBuffer, Table *table);
+
+bool VarLenInfoEqualFun(Type *obj1, Type *obj2);

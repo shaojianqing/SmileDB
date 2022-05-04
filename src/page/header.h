@@ -4,11 +4,17 @@ typedef struct FileTrailer FileTrailer;
 
 typedef struct IndexHeader IndexHeader;
 
-typedef struct FsegHeader FsegHeader;
+typedef struct FileSegmentHeader FileSegmentHeader;
 
-typedef struct RecordBuffer RecordBuffer;
+typedef struct FileSpaceHeader FileSpaceHeader;
 
 typedef struct RecordHeader RecordHeader;
+
+typedef struct ListBaseNode ListBaseNode;
+
+typedef struct ListExtentNode ListExtentNode;
+
+typedef struct ExtentDescriptor ExtentDescriptor;
 
 struct FileHeader {
 
@@ -63,7 +69,7 @@ struct IndexHeader {
     u64 indexId;
 };
 
-struct FsegHeader {
+struct FileSegmentHeader {
 
     u32 leafPagesInodeSpace;
 
@@ -76,7 +82,67 @@ struct FsegHeader {
     u32 nonLeafPagesInodePageNumber;
 
     u16 nonLeafPagesInodeOffset;
-}
+};
+
+struct ListBaseNode {
+
+    u32 length;
+
+    int firstPageNo;
+
+    u16 firstPageOffset;
+
+    int lastPageNo;
+
+    u16 lastPageOffset;
+};
+
+struct FileSpaceHeader {
+
+    u64 spaceId;
+
+    u64 size;
+
+    u64 freeLimit;
+
+    u64 flags;
+
+    u64 usedPageCount;
+
+    ListBaseNode free;
+
+    ListBaseNode freeFrag;
+
+    ListBaseNode fullFrag;
+
+    long nextUsedSegmentId;
+
+    ListBaseNode fullInodes;
+
+    ListBaseNode freeInodes;
+};
+
+struct ListExtentNode {
+
+    int prevPageNo;
+
+    short prevOffset;
+
+    int nextPageNo;
+
+    short nextOffset; 
+};
+
+struct ExtentDescriptor {
+
+    u64 segmentId;
+
+    ListExtentNode extentNode;
+
+    u32 state;
+
+    //byte[16] pageStateBitmap;
+};
 
 struct RecordBuffer {
 
@@ -85,18 +151,27 @@ struct RecordBuffer {
     u16 orderAndType;
 
     short nextOffest;
-}
+};
 
 struct RecordHeader {
 
+    u8 recordFlag;
 
-    
-}
+    u16 recordOwnedCount;
 
-void initFileHeader(FileHeader *fileHeader);
+    short order;
 
-void initFileTrailer(FileTrailer *fileTrailer);
+    u16 recordType;
 
-void initIndexHeader(IndexHeader *indexHeader);  
+    int nextRecordOffset;
+};
 
-void initFsegHeader(FsegHeader *fsegHeader);
+void initFileHeader(ByteBuffer *byteBuffer, FileHeader *fileHeader);
+
+void initFileTrailer(ByteBuffer *byteBuffer, FileTrailer *fileTrailer);
+
+void initIndexHeader(ByteBuffer *byteBuffer, IndexHeader *indexHeader);  
+
+void initFsegHeader(ByteBuffer *byteBuffer, FileSegmentHeader *fsegHeader);
+
+void initRecordHeader(ByteBuffer *byteBuffer, RecordHeader *recordHeader);
