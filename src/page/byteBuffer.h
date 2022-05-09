@@ -1,5 +1,23 @@
 typedef struct ByteBuffer ByteBuffer;
 
+typedef union DoubleByte DoubleByte;
+
+typedef union FloatByte FloatByte;
+
+union DoubleByte {
+
+    double value;
+
+    byte buffer[sizeof(double)];
+};
+
+union FloatByte {
+
+    float value;
+
+    byte buffer[sizeof(float)];
+};
+
 struct ByteBuffer {
 
     byte *buffer;
@@ -12,7 +30,7 @@ struct ByteBuffer {
 
     byte* (*readByteArray)(ByteBuffer *this, u32 size);
 
-    byte (*readByte)(ByteBuffer *this);
+    char (*readByte)(ByteBuffer *this);
 
     short (*readShort)(ByteBuffer *this);
 
@@ -31,6 +49,8 @@ struct ByteBuffer {
     u64 (*readUnsignedLong)(ByteBuffer *this);
 
     String* (*readString)(ByteBuffer *this, u32 length);
+
+    u64 (*calcluateBigendian)(ByteBuffer *this, u32 length);
 
     void (*increasePosition)(ByteBuffer *this, u32 delta);
 

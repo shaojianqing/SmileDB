@@ -10,3 +10,7 @@ void convertEndianInt2(int *data);
 void convertEndianLong(u64 *data);
 
 void convertEndianLong2(long *data);
+
+void convertEndianFloat(float *data);
+
+void convertEndianDouble(double *data);

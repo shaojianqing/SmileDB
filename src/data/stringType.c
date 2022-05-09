@@ -33,7 +33,7 @@ String *createString(char *value) {
 	if (value!=NULL && length>0) {
 		bindFunction(string);
 		string->length = length;
-		string->value = malloc(length*2+1);
+		string->value = malloc(length+1);
 		memcpy(string->value, value, length);
 		string->value[length] = '\0';
 	} else {
@@ -50,7 +50,7 @@ String* createStringWithRange(char *value, int range) {
 	if (value!=NULL && length>0) {
 		bindFunction(string);
 		string->length = length;
-		string->value = malloc(length*2+1);
+		string->value = malloc(length+1);
 		memcpy(string->value, value, length);
 		string->value[length] = '\0';
 	} else {

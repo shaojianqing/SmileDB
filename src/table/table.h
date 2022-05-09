@@ -23,11 +23,9 @@ struct Column {
 
     bool isPrimaryKey;
 
-    int length;
+    u16 length;
 
-    int scale;
-
-    int precision;
+    u16 precision;
 
     bool (*isFixedLength)(Column *column);
 
@@ -51,4 +49,4 @@ struct Table {
     List *variableLenColumnList;
 };
 
-Column *buildColumn(Table *table, String *name, String *type, bool nullable, bool isPrimaryKey, int length);
+Column *buildColumn(Table *table, String *name, String *type, bool nullable, bool isPrimaryKey, u16 length, u16 precision);

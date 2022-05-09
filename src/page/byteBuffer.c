@@ -35,6 +35,8 @@ static double readDouble(ByteBuffer *this);
 
 static String* readString(ByteBuffer *this, u32 length);
 
+static u64 calcluateBigendian(ByteBuffer *this, u32 length);
+
 static void increasePosition(ByteBuffer *this, u32 delta);
 
 static void decreasePosition(ByteBuffer *this, u32 delta);
@@ -62,6 +64,7 @@ ByteBuffer *constructByteBuffer(byte *buffer, u32 size) {
     byteBuffer->readFloat = readFloat;
     byteBuffer->readDouble = readDouble;
     byteBuffer->readString = readString;
+    byteBuffer->calcluateBigendian =calcluateBigendian;
     byteBuffer->increasePosition = increasePosition;
     byteBuffer->decreasePosition = decreasePosition;
     byteBuffer->setPosition = setPosition;
@@ -151,11 +154,19 @@ static u64 readUnsignedLong(ByteBuffer *this) {
 }
 
 static float readFloat(ByteBuffer *this) {
-    return 0.0;
+    FloatByte floatByte;
+    memcpy(&floatByte, (this->buffer + this->position), sizeof(float));
+    this->position += sizeof(float);
+    convertEndianFloat(&floatByte.value);
+    return floatByte.value;
 }
 
 static double readDouble(ByteBuffer *this) {
-    return 0.0;
+    DoubleByte doubleByte;
+    memcpy(&doubleByte, (this->buffer + this->position), sizeof(double));
+    this->position += sizeof(double);
+    convertEndianDouble(&doubleByte.value);
+    return doubleByte.value;
 }
 
 static String* readString(ByteBuffer *this, u32 length) {
@@ -165,6 +176,29 @@ static String* readString(ByteBuffer *this, u32 length) {
     value[length] = 0;
 
     return createString(value);
+}
+
+static u64 calcluateBigendian(ByteBuffer *this, u32 length) {
+    byte* bytes = this->readByteArray(this, length);
+    long val = 0;
+    int i = length;
+    int s = 0;
+    while (i != 0) {
+      i--;
+      long v = (bytes[i] & 0xffL);
+      val += (v << s);
+      s += 8;
+    }
+    return val;
+
+    /*byte* datetimeBuf = this->readByteArray(this, length);
+    u64 result = 0;
+    u32 i = 0;
+    for (i=0;i<length;++i) {
+       result += (datetimeBuf[i] && 0xFF);
+       result = (result<<8);
+    }
+    return result;*/
 }
 
 static void increasePosition(ByteBuffer *this, u32 delta) {

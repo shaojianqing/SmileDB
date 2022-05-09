@@ -66,12 +66,12 @@ DataRecord* readDataRecord(ByteBuffer *byteBuffer, Table *table) {
     }
     // For Other Record Type, Read the Record Data 
     else {
-        //Process the nullable column list
+        // Process the nullable column list
         byteBuffer->decreasePosition(byteBuffer, RECORD_BUFFER_SIZE);
         byte* nullColumnBitmap = makeNullBitmap(byteBuffer, table->nullableColumnList);
         List* nullColumnList = makeNullColumn(nullColumnBitmap, table->nullableColumnList);
-
         u32 nullableColumnByteSize = makeNullByteSize(table->nullableColumnList);
+
         List *variableLenColumnList = NULL;
         if (recordHeader->recordType==RECORD_NODE_POINTER) {
             variableLenColumnList = table->keyVarLenColumnList;
@@ -105,11 +105,11 @@ DataRecord* readDataRecord(ByteBuffer *byteBuffer, Table *table) {
             u32 childPageNumber = byteBuffer->readUnsignedInteger(byteBuffer);
             dataRecord->childPageNumber = childPageNumber;
         } else if (recordHeader->recordType==RECORD_CONVENTIONAL) {
-           byteBuffer->increasePosition(byteBuffer, TRANSACTION_ID_SIZE + ROLL_POINT_SIZE);
-           List *columnList = table->columnList;
-           u32 columnCount = columnList->getSize(columnList);
-           u32 i=0;
-           for (i=0;i<columnCount;++i) {
+            byteBuffer->increasePosition(byteBuffer, TRANSACTION_ID_SIZE + ROLL_POINT_SIZE);
+            List *columnList = table->columnList;
+            u32 columnCount = columnList->getSize(columnList);
+            u32 i=0;
+            for (i=0;i<columnCount;++i) {
                 Column *column = columnList->get(columnList, i);
                 if (primaryKeyColumnList->containsObject(primaryKeyColumnList, column) == FALSE) {
                     if (nullColumnList->containsObject(nullColumnList, column->name)) {
@@ -232,7 +232,7 @@ static List* makeNullColumn(byte *nullableColumnBitmap, List *nullColumns) {
     List* nullColumnList = createArrayList(8);
     u32 i=0;
     for (i=0;i<nullColumnCount;++i) {
-        if (nullableColumnBitmap[i]==0) {
+        if (nullableColumnBitmap[i]==1) {
             Column *nullColumn = nullColumns->get(nullColumns, i);
             nullColumnList->add(nullColumnList, nullColumn->name);
         }

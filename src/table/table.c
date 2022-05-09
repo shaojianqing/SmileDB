@@ -22,7 +22,7 @@ static bool isVariableLength(Column *column);
 
 static bool columnEquals(Type *obj1, Type *obj2);
 
-Column *buildColumn(Table *table, String *name, String *type, bool nullable, bool isPrimaryKey, int length) {
+Column *buildColumn(Table *table, String *name, String *type, bool nullable, bool isPrimaryKey, u16 length, u16 precision) {
     Column *column = (Column*)malloc(sizeof(Column));
 
     bindFunction(column);
@@ -33,6 +33,7 @@ Column *buildColumn(Table *table, String *name, String *type, bool nullable, boo
     column->nullable = nullable;
     column->isPrimaryKey = isPrimaryKey;
     column->length = length;
+    column->precision = precision;
 
     return column;
 }
@@ -70,7 +71,7 @@ static bool isVariableLength(Column *column) {
 static bool isFixedLength(Column *column) {
     if (strcmp(column->type->value, TYPE_CHAR)==0 || 
         strcmp(column->type->value, TYPE_BINARY)==0) {
-            return TRUE;
+        return TRUE;
     } else {
         return FALSE;
     }

@@ -22,6 +22,12 @@
 
 #define DIRECTORY_SLOT_SIZE              2
 
+#define TRANSACTION_ID_SIZE              6
+
+#define ROLL_POINT_SIZE                  7
+
+#define ROW_ID_SIZE                      6
+
 /*
  * Page Type Enum
  */
@@ -41,6 +47,9 @@
 #define PAGE_TYPE_RTREE_INDEX            17854
 #define PAGE_TYPE_INDEX                  17855
 
+/*
+ * Record Type Enum
+ */
 #define RECORD_CONVENTIONAL              0
 #define RECORD_NODE_POINTER              1
 #define RECORD_TYPE_INFIMUM              2
@@ -48,10 +57,9 @@
 
 #define ROOT_PAGE_NUMBER                 3
 
-#define TRANSACTION_ID_SIZE              6
-#define ROLL_POINT_SIZE                  7
-#define ROW_ID_SIZE                      6
-
+/*
+ * Column Type Enum
+ */
 #define TYPE_TINYINT                     "tinyint"
 #define TYPE_SMALLINT                    "smallint"
 #define TYPE_INT                         "int"
